@@ -1,25 +1,29 @@
 import cv2
-import pynetworktables
+from networktables import NetworkTable
 
 videoCapture = None
 visionTable = None
 
 def main():
-	videoCapture = cv2.videoCapture(0)
+	global videoCapture
+	videoCapture = cv2.VideoCapture()
+	videoCapture.open(0)
 	setupVisionTable()
 	runVision()
 	releaseCapture()
 
 def setupVisionTable():
 	global visionTable
-	NetworkTable.SetIpAddress("10.46.69.2")
-	NetworkTable.SetClientMode()
-	NetworkTable.Initialize()
+	NetworkTable.setIPAddress("10.46.69.21")
+	NetworkTable.setClientMode()
+	NetworkTable.initialize()
 	visionTable = NetworkTable.getTable("vision")
 
 def runVision():
 	global visionTable
 	while(True):
+		#print(visionTable.isConnected())
+		print(getRunVision())
 		if visionTable.isConnected() and getRunVision():
 			frame1 = getCameraImage()
 			turnOnLight()
@@ -31,7 +35,7 @@ def runVision():
 			setRunVision(False)
 
 def putValuesOnVisionTable(hull):
-	return
+	print("Success")
 
 def setRunVision(b):
 	global visionTable
@@ -75,15 +79,15 @@ def getDifference(frame1, frame2):
 	return diff
 
 def getGrayscale(frame):
-	grayscale = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+	grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	return grayscale
 
 def threshold(frame):
-	newFrame = cv2.threshold(frame, 50, 255, cv2.THRESH_BINARY)
+	th, newFrame = cv2.threshold(frame, 50, 255, cv2.THRESH_BINARY)
 	return newFrame
 
 def getContours(frame):
-	contoursList, hierarchy = cv2.findContours(frame, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+	contoursList, hierarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	return contoursList
 
 def getMaxContour(contoursList):
