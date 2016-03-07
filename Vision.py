@@ -1,4 +1,5 @@
 import cv2
+import time
 from networktables import NetworkTable
 
 videoCapture = None
@@ -8,6 +9,10 @@ def main():
 	global videoCapture
 	videoCapture = cv2.VideoCapture()
 	videoCapture.open(0)
+	if (videoCapture.isOpened()):
+		print("Camera is open")
+	else:
+		print("Camera is NOT open")
 	setupVisionTable()
 	runVision()
 	releaseCapture()
@@ -27,6 +32,7 @@ def runVision():
 		if visionTable.isConnected() and getRunVision():
 			frame1 = getCameraImage()
 			turnOnLight()
+			time.sleep(1)
 			frame2 = getCameraImage()
 			turnOffLight()
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
