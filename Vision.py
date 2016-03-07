@@ -23,7 +23,7 @@ def runVision():
 	global visionTable
 	while(True):
 		#print(visionTable.isConnected())
-		print(getRunVision())
+		#print(getRunVision())
 		if visionTable.isConnected() and getRunVision():
 			frame1 = getCameraImage()
 			turnOnLight()
@@ -36,6 +36,7 @@ def runVision():
 
 def putValuesOnVisionTable(hull):
 	print("Success")
+	print(hull)
 
 def setRunVision(b):
 	global visionTable
