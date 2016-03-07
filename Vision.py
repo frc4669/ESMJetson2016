@@ -51,11 +51,10 @@ def releaseCapture():
 
 def turnOnLight():
 	global visionTable
-	if (visionTable.getBoolean("lightOn", True) == False):
-		visionTable.putBoolean("lightOn", True)
-		while(True):
-			if (getLightOnDone()):
-				return
+	visionTable.putBoolean("lightOn", True)
+	while(True):
+		if (getLightOnDone()):
+			return
 
 def getLightOnDone():
 	global visionTable
@@ -63,11 +62,10 @@ def getLightOnDone():
 
 def turnOffLight():
 	global visionTable
-	if (visionTable.getBoolean("lightOn", False) == True):
-		visionTable.putBoolean("lightOn", False)
-		while(True):
-			if(getLightOnDone() == False):
-				return
+	visionTable.putBoolean("lightOn", False)
+	while(True):
+		if(getLightOnDone() == False):
+			return
 
 def getCameraImage():
 	global videoCapture
