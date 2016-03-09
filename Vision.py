@@ -1,5 +1,4 @@
 import cv2
-import time
 from networktables import NetworkTable
 
 videoCapture = None
@@ -17,6 +16,8 @@ def setupVisionTable():
 	NetworkTable.setClientMode()
 	NetworkTable.initialize()
 	visionTable = NetworkTable.getTable("vision")
+	setRunVision(False)
+	turnOffLight()
 
 def runVision():
 	global visionTable
@@ -24,16 +25,18 @@ def runVision():
 		#print(visionTable.isConnected())
 		#print(getRunVision())
 		if visionTable.isConnected() and getRunVision():
+			openCapture()
 			frame1 = getCameraImage()
 			cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame1", frame1)
 			turnOnLight()
-			time.sleep(5)
+			cv2.waitKey(1000)
 			frame2 = getCameraImage()
 			cv2.namedWindow("frame2", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame2", frame2)
 			turnOffLight()
-			cv2.waitKey(0)
+			cv2.waitKey(1000)
+			releaseCapture()
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
 			hull = getConvexHull(getMaxContour(getContours(processedFrame)))
 			putValuesOnVisionTable(hull)
@@ -83,9 +86,10 @@ def turnOffLight():
 
 def getCameraImage():
 	global videoCapture
-	openCapture()
-	retval, frame = videoCapture.read()
-	releaseCapture()
+	retval = False
+	while(retval == False):
+		videoCapture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, cv2.cv.CV_CAP_PROP_FRAME_COUNT - 1)
+		retval, frame = videoCapture.read()
 	return frame
 
 def getDifference(frame1, frame2):
