@@ -43,8 +43,13 @@ def runVision():
 			setRunVision(False)
 
 def putValuesOnVisionTable(hull):
+	x,y,w,h = cv2.boundingRect(hull)
 	print("Success")
-	print(hull)
+	print(x,y,w,h)
+	visionTable.putNumber("x", x)
+	visionTable.putNumber("y", y)
+	visionTable.putNumber("w", w)
+	visionTable.putNumber("h", h)
 
 def setRunVision(b):
 	global visionTable
