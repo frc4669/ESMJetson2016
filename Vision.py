@@ -25,7 +25,6 @@ def runVision():
 		#print(visionTable.isConnected())
 		#print(getRunVision())
 		if visionTable.isConnected() and getRunVision():
-			openCapture()
 			frame1 = getCameraImage()
 			cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame1", frame1)
@@ -36,7 +35,6 @@ def runVision():
 			cv2.imshow("frame2", frame2)
 			turnOffLight()
 			cv2.waitKey(1000)
-			releaseCapture()
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
 			hull = getConvexHull(getMaxContour(getContours(processedFrame)))
 			putValuesOnVisionTable(hull)
@@ -91,10 +89,9 @@ def turnOffLight():
 
 def getCameraImage():
 	global videoCapture
-	retval = False
-	while(retval == False):
-		videoCapture.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, cv2.cv.CV_CAP_PROP_FRAME_COUNT - 1)
-		retval, frame = videoCapture.read()
+	openCapture()
+	retval, frame = videoCapture.read()
+	releaseCapture()
 	return frame
 
 def getDifference(frame1, frame2):
