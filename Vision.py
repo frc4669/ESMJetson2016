@@ -4,6 +4,8 @@ from networktables import NetworkTable
 videoCapture = None
 visionTable = None
 
+#image size is 640x480
+
 def main():
 	global videoCapture
 	videoCapture = cv2.VideoCapture()
@@ -27,17 +29,17 @@ def runVision():
 		if visionTable.isConnected() and getRunVision():
 			for i in xrange(30):
 				frame1 = getCameraImage()
-			cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
-			cv2.imshow("frame1", frame1)
-			cv2.imwrite("frame1.jpg", frame1)
+			#cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
+			#cv2.imshow("frame1", frame1)
+			#cv2.imwrite("frame1.jpg", frame1)
 			turnOnLight()
-			cv2.waitKey(500)
+			cv2.waitKey(100)
 			for i in xrange(30):
 				frame2 = getCameraImage()
-			cv2.namedWindow("frame2", cv2.WINDOW_NORMAL)
-			cv2.imshow("frame2", frame2)
-			cv2.imwrite("frame2.jpg", frame2)
-			cv2.waitKey(500)
+			#cv2.namedWindow("frame2", cv2.WINDOW_NORMAL)
+			#cv2.imshow("frame2", frame2)
+			#cv2.imwrite("frame2.jpg", frame2)
+			cv2.waitKey(100)
 			turnOffLight()
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
 			hull = getConvexHull(getMaxContour(getContours(processedFrame)))
@@ -46,7 +48,7 @@ def runVision():
 
 def putValuesOnVisionTable(hull):
 	x,y,w,h = cv2.boundingRect(hull)
-	print("Success")
+	#print("Success")
 	print(x,y,w,h)
 	visionTable.putNumber("x", x)
 	visionTable.putNumber("y", y)
@@ -66,7 +68,7 @@ def openCapture():
 	while (not videoCapture.isOpened()):
 		print("Camera is NOT open")
 		videoCapture.open(0)
-	print("Camera is open")
+	#print("Camera is open")
 	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1920)
 	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 1080)
 
