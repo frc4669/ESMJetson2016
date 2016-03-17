@@ -58,12 +58,13 @@ def getRunVision():
 	return visionTable.getBoolean("runVision", False)
 
 def openCapture():
-	global videoCapture	
-	videoCapture.open(0)
-	if (videoCapture.isOpened()):
-		print("Camera is open")
-	else:
+	global videoCapture
+	while (not videoCapture.isOpened()):
 		print("Camera is NOT open")
+		videoCapture.open(0)
+	print("Camera is open")
+	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1920)
+	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 1080)
 
 def releaseCapture():
 	global videoCapture
@@ -89,9 +90,10 @@ def turnOffLight():
 
 def getCameraImage():
 	global videoCapture
+	#videoCapture = cv2.VideoCapture()
 	openCapture()
 	retval, frame = videoCapture.read()
-	releaseCapture()
+	#releaseCapture()
 	return frame
 
 def getDifference(frame1, frame2):

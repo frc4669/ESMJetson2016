@@ -1,5 +1,4 @@
 import cv2
-import time
 from networktables import NetworkTable
 
 videoCapture = None
@@ -8,7 +7,7 @@ visionTable = None
 def main():
 	global videoCapture
 	videoCapture = cv2.VideoCapture()
-	setupVisionTable()
+	#setupVisionTable()
 	runVision()
 
 def setupVisionTable():
@@ -17,33 +16,38 @@ def setupVisionTable():
 	NetworkTable.setClientMode()
 	NetworkTable.initialize()
 	visionTable = NetworkTable.getTable("vision")
+	setRunVision(False)
+	turnOffLight()
 
 def runVision():
 	global visionTable
 	while(True):
 		#print(visionTable.isConnected())
 		#print(getRunVision())
-		if visionTable.isConnected() and getRunVision():
-			openCapture()
+		#if visionTable.isConnected() and getRunVision():
 			frame1 = getCameraImage()
 			cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame1", frame1)
-			turnOnLight()
-			time.sleep(5)
+			#turnOnLight()
+			cv2.waitKey(1000)
 			frame2 = getCameraImage()
 			cv2.namedWindow("frame2", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame2", frame2)
-			turnOffLight()
-			cv2.waitKey(0)
-			releaseCapture()
+			#turnOffLight()
+			cv2.waitKey(1000)
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
 			hull = getConvexHull(getMaxContour(getContours(processedFrame)))
 			putValuesOnVisionTable(hull)
-			setRunVision(False)
+			#setRunVision(False)
 
 def putValuesOnVisionTable(hull):
+	x,y,w,h = cv2.boundingRect(hull)
 	print("Success")
-	print(hull)
+	print(x,y,w,h)
+	#visionTable.putNumber("x", x)
+	#visionTable.putNumber("y", y)
+	#visionTable.putNumber("w", w)
+	#visionTable.putNumber("h", h)
 
 def setRunVision(b):
 	global visionTable
@@ -54,12 +58,13 @@ def getRunVision():
 	return visionTable.getBoolean("runVision", False)
 
 def openCapture():
-	global videoCapture	
-	videoCapture.open(0)
-	if (videoCapture.isOpened()):
-		print("Camera is open")
-	else:
+	global videoCapture
+	while (not videoCapture.isOpened()):
 		print("Camera is NOT open")
+		videoCapture.open(0)
+	print("Camera is open")
+	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, 1920)
+	#videoCapture.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, 1080)
 
 def releaseCapture():
 	global videoCapture
@@ -85,7 +90,10 @@ def turnOffLight():
 
 def getCameraImage():
 	global videoCapture
+	#videoCapture = cv2.VideoCapture()
+	openCapture()
 	retval, frame = videoCapture.read()
+	#releaseCapture()
 	return frame
 
 def getDifference(frame1, frame2):
