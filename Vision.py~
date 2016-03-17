@@ -7,7 +7,7 @@ visionTable = None
 def main():
 	global videoCapture
 	videoCapture = cv2.VideoCapture()
-	#setupVisionTable()
+	setupVisionTable()
 	runVision()
 
 def setupVisionTable():
@@ -24,30 +24,34 @@ def runVision():
 	while(True):
 		#print(visionTable.isConnected())
 		#print(getRunVision())
-		#if visionTable.isConnected() and getRunVision():
-			frame1 = getCameraImage()
+		if visionTable.isConnected() and getRunVision():
+			for i in xrange(30):
+				frame1 = getCameraImage()
 			cv2.namedWindow("frame1", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame1", frame1)
-			#turnOnLight()
+			cv2.imwrite("frame1.jpg", frame1)
+			turnOnLight()
 			cv2.waitKey(1000)
-			frame2 = getCameraImage()
+			for i in xrange(30):
+				frame2 = getCameraImage()
 			cv2.namedWindow("frame2", cv2.WINDOW_NORMAL)
 			cv2.imshow("frame2", frame2)
-			#turnOffLight()
+			cv2.imwrite("frame2.jpg", frame2)
 			cv2.waitKey(1000)
+			turnOffLight()
 			processedFrame = threshold(getGrayscale(getDifference(frame1, frame2)))
 			hull = getConvexHull(getMaxContour(getContours(processedFrame)))
 			putValuesOnVisionTable(hull)
-			#setRunVision(False)
+			setRunVision(False)
 
 def putValuesOnVisionTable(hull):
 	x,y,w,h = cv2.boundingRect(hull)
 	print("Success")
 	print(x,y,w,h)
-	#visionTable.putNumber("x", x)
-	#visionTable.putNumber("y", y)
-	#visionTable.putNumber("w", w)
-	#visionTable.putNumber("h", h)
+	visionTable.putNumber("x", x)
+	visionTable.putNumber("y", y)
+	visionTable.putNumber("w", w)
+	visionTable.putNumber("h", h)
 
 def setRunVision(b):
 	global visionTable
